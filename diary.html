@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隨心日記</title>
+    <title>隨心心情日記</title>
     <!-- 分頁小圖示 (Favicon) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
     <style>
@@ -74,57 +74,76 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        .lock-screen {
+        .auth-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
-            padding: 40px 20px;
+            padding: 30px 24px;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 18px var(--glow-color);
             text-align: center;
-            max-width: 400px;
-            margin: 80px auto;
+            max-width: 420px;
+            margin: 50px auto;
         }
 
-        .lock-icon {
-            font-size: 56px;
-            margin-bottom: 12px;
+        .auth-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 0 12px var(--secondary-color));
         }
 
-        .lock-screen input[type="password"] {
-            width: 80%;
+        .auth-card input[type="password"],
+        .auth-card input[type="text"] {
+            width: 100%;
             padding: 12px;
-            margin: 15px 0;
+            margin: 8px 0 16px 0;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
             box-sizing: border-box;
             outline: none;
         }
 
-        .lock-screen input[type="password"]:focus {
+        .auth-card input:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 10px var(--glow-color);
         }
 
-        .lock-screen button {
-            width: 80%;
+        .auth-card button {
+            width: 100%;
             background: var(--primary-gradient);
             color: #FFFFFF;
             border: 1px solid var(--border-color);
             padding: 12px;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 15px var(--glow-color);
             transition: all 0.2s;
+            margin-top: 6px;
         }
 
+        .auth-card button.secondary-btn {
+            background: var(--input-bg);
+            color: var(--sub-text);
+            box-shadow: none;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: #60A5FA;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 12px;
+            text-decoration: underline;
+        }
+
+        .hidden { display: none !important; }
         .main-app { display: none; }
 
         h1 {
@@ -146,17 +165,27 @@
             margin-bottom: 30px;
         }
 
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
 
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #93C5FD;
             letter-spacing: 1px;
+            font-size: 14px;
         }
 
-        input[type="date"], input[type="text"], textarea {
+        .date-time-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-time-group input {
+            flex: 1;
+        }
+
+        input[type="date"], input[type="time"], input[type="text"], textarea {
             width: 100%;
             padding: 12px;
             background: var(--input-bg);
@@ -169,7 +198,7 @@
             transition: all 0.2s;
         }
 
-        input[type="date"]:focus, input[type="text"]:focus, textarea:focus {
+        input[type="date"]:focus, input[type="time"]:focus, input[type="text"]:focus, textarea:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 10px var(--glow-color);
         }
@@ -229,22 +258,31 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .lock-now-btn {
+        .top-bar-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
             background: var(--input-bg);
             color: var(--sub-text);
             border: 1px solid var(--border-color);
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
             transition: all 0.2s;
         }
 
-        .lock-now-btn:hover {
+        .tool-btn:hover {
             color: #60A5FA;
             border-color: #60A5FA;
+            box-shadow: 0 0 8px var(--glow-color);
         }
 
         .diary-list {
@@ -362,7 +400,7 @@
             text-decoration: underline;
         }
 
-        /* 編輯彈窗 modal 樣式 */
+        /* 彈窗 modal 樣式 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -406,17 +444,60 @@
 </head>
 <body>
 
-    <!-- 1. 密碼解鎖畫面 -->
-    <div id="lock-screen" class="lock-screen">
-        <div class="lock-icon">🌙</div>
-        <h2 id="lock-title">日記已鎖定</h2>
-        <p id="lock-desc" style="color: var(--sub-text); font-size: 14px;">請輸入密碼以進入星空空間</p>
-        <input type="password" id="password-input" placeholder="輸入密碼" onkeypress="handleKeyPress(event)">
-        <br>
-        <button id="lock-btn" onclick="checkPassword()">解鎖日記</button>
+    <!-- 1. 首次設定密碼與安全問答 -->
+    <div id="setup-panel" class="auth-card hidden">
+        <div class="auth-icon">🌌</div>
+        <h2>首次使用設定</h2>
+        <p style="color: var(--sub-text); font-size: 13px; margin-bottom: 20px;">請設定進入星空空間的密碼與忘記密碼提示</p>
+        
+        <div class="form-group">
+            <label>設定解鎖密碼</label>
+            <input type="password" id="setup-pass" placeholder="輸入新密碼">
+        </div>
+        <div class="form-group">
+            <label>安全提示問題 (忘記密碼時使用)</label>
+            <input type="text" id="setup-question" placeholder="例如：我第一隻寵物的名字？">
+        </div>
+        <div class="form-group">
+            <label>提示問題答案</label>
+            <input type="text" id="setup-answer" placeholder="輸入答案">
+        </div>
+        <button onclick="handleSetup()">儲存並進入日記</button>
     </div>
 
-    <!-- 2. 日記主要畫面 -->
+    <!-- 2. 輸入密碼解鎖畫面 -->
+    <div id="unlock-panel" class="auth-card hidden">
+        <div class="auth-icon">🌙</div>
+        <h2>日記已鎖定</h2>
+        <p style="color: var(--sub-text); font-size: 14px; margin-bottom: 15px;">請輸入密碼以進入星空空間</p>
+        <input type="password" id="unlock-pass" placeholder="輸入密碼" onkeypress="if(event.key==='Enter') handleUnlock()">
+        <button onclick="handleUnlock()">解鎖日記</button>
+        <button class="link-btn" onclick="showAuthPanel('forgot-panel')">忘記密碼？</button>
+    </div>
+
+    <!-- 3. 忘記密碼 (安全問答重置) 畫面 -->
+    <div id="forgot-panel" class="auth-card hidden">
+        <div class="auth-icon">🔑</div>
+        <h2>重置密碼</h2>
+        <p style="color: var(--sub-text); font-size: 13px;">請回答當初設定的安全問題</p>
+        
+        <div class="form-group" style="margin-top: 15px;">
+            <label>提示問題：</label>
+            <div id="display-question" style="color: #60A5FA; font-weight: bold; padding: 6px 0;"></div>
+        </div>
+        <div class="form-group">
+            <label>您的答案</label>
+            <input type="text" id="forgot-answer" placeholder="輸入問題答案">
+        </div>
+        <div class="form-group">
+            <label>設定新密碼</label>
+            <input type="password" id="forgot-new-pass" placeholder="輸入新密碼">
+        </div>
+        <button onclick="handleResetPassword()">重置密碼</button>
+        <button class="secondary-btn" onclick="showAuthPanel('unlock-panel')">返回登入</button>
+    </div>
+
+    <!-- 4. 日記主要畫面 -->
     <div id="main-app" class="main-app">
         
         <!-- 星空跑馬燈區塊 -->
@@ -425,15 +506,26 @@
         </div>
 
         <div class="top-bar">
-            <h1>🌙 星空心情日記</h1>
-            <button class="lock-now-btn" onclick="lockApp()">🔒 上鎖</button>
+            <h1 style="margin: 0; font-size: 24px;">🌙 星空心情日記</h1>
+            <div class="top-bar-btns">
+                <button class="tool-btn" onclick="openChangePasswordModal()">🔑 修改密碼</button>
+                <button class="tool-btn" onclick="exportData()">📦 匯出日記</button>
+                <button class="tool-btn" onclick="triggerImport()">📥 匯入日記</button>
+                <button class="tool-btn" onclick="lockApp()">🔒 上鎖</button>
+            </div>
         </div>
+
+        <!-- 隱藏的檔案上傳輸入框 -->
+        <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="importData(event)">
 
         <!-- 日記新增表單 -->
         <div class="diary-form">
             <div class="form-group">
-                <label for="diary-date">📅 選擇日期</label>
-                <input type="date" id="diary-date">
+                <label>📅 選擇日期與時間</label>
+                <div class="date-time-group">
+                    <input type="date" id="diary-date">
+                    <input type="time" id="diary-time">
+                </div>
             </div>
 
             <div class="form-group">
@@ -476,14 +568,17 @@
         <div class="diary-list" id="diary-list"></div>
     </div>
 
-    <!-- 3. 編輯日記彈窗 Modal -->
+    <!-- 5. 編輯日記彈窗 Modal -->
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 style="color: #60A5FA; margin-top: 0;">✏️ 編輯日記</h2>
             <input type="hidden" id="edit-id">
             <div class="form-group">
-                <label>📅 日期</label>
-                <input type="date" id="edit-date">
+                <label>📅 日期與時間</label>
+                <div class="date-time-group">
+                    <input type="date" id="edit-date">
+                    <input type="time" id="edit-time">
+                </div>
             </div>
             <div class="form-group">
                 <label>✨ 心情</label>
@@ -522,63 +617,162 @@
         </div>
     </div>
 
+    <!-- 6. 修改密碼彈窗 Modal -->
+    <div id="change-pass-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: #60A5FA; margin-top: 0; text-align: center;">🔑 修改密碼</h2>
+            <div class="form-group">
+                <label>目前舊密碼</label>
+                <input type="password" id="change-old-pass" placeholder="輸入舊密碼">
+            </div>
+            <div class="form-group">
+                <label>設定新密碼</label>
+                <input type="password" id="change-new-pass" placeholder="輸入新密碼">
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeChangePasswordModal()">取消</button>
+                <button class="submit-btn" style="flex: 1;" onclick="handleChangePassword()">確認變更</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let selectedMood = '😊 快樂';
         let editSelectedMood = '😊 快樂';
 
-        function initAuth() {
-            const savedPassword = localStorage.getItem('diary_password');
-            const lockTitle = document.getElementById('lock-title');
-            const lockDesc = document.getElementById('lock-desc');
-            const lockBtn = document.getElementById('lock-btn');
+        // 控制驗證頁面切換 (setup / unlock / forgot)
+        function showAuthPanel(panelId) {
+            document.getElementById('setup-panel').classList.add('hidden');
+            document.getElementById('unlock-panel').classList.add('hidden');
+            document.getElementById('forgot-panel').classList.add('hidden');
+            document.getElementById('main-app').style.display = 'none';
 
-            if (!savedPassword) {
-                lockTitle.innerText = '首次使用設定';
-                lockDesc.innerText = '請設定你的私人星空日記密碼';
-                lockBtn.innerText = '設定密碼並進入';
-            } else {
-                lockTitle.innerText = '日記已鎖定';
-                lockDesc.innerText = '請輸入密碼以進入星空空間';
-                lockBtn.innerText = '解鎖日記';
+            document.getElementById(panelId).classList.remove('hidden');
+
+            if (panelId === 'forgot-panel') {
+                const q = localStorage.getItem('diary_question') || '未設定提示問題';
+                document.getElementById('display-question').innerText = q;
             }
         }
 
-        function checkPassword() {
-            const input = document.getElementById('password-input').value;
+        function initAuth() {
+            const savedPassword = localStorage.getItem('diary_password');
+            if (!savedPassword) {
+                showAuthPanel('setup-panel');
+            } else {
+                showAuthPanel('unlock-panel');
+            }
+        }
+
+        // 首次設定密碼與安全問答
+        function handleSetup() {
+            const pass = document.getElementById('setup-pass').value.trim();
+            const question = document.getElementById('setup-question').value.trim();
+            const answer = document.getElementById('setup-answer').value.trim().toLowerCase();
+
+            if (!pass || !question || !answer) {
+                alert('請完整填寫密碼與安全問題資訊！');
+                return;
+            }
+
+            localStorage.setItem('diary_password', pass);
+            localStorage.setItem('diary_question', question);
+            localStorage.setItem('diary_answer', answer);
+
+            alert('密碼與安全問答設定成功！');
+            unlockApp();
+        }
+
+        // 密碼解鎖
+        function handleUnlock() {
+            const input = document.getElementById('unlock-pass').value;
             const savedPassword = localStorage.getItem('diary_password');
 
-            if (!input) { alert('請輸入密碼！'); return; }
-
-            if (!savedPassword) {
-                localStorage.setItem('diary_password', input);
-                alert('密碼設定成功！請妥善保存。');
-                unlockApp();
-            } else if (input === savedPassword) {
+            if (input === savedPassword) {
+                document.getElementById('unlock-pass').value = '';
                 unlockApp();
             } else {
                 alert('密碼錯誤！');
-                document.getElementById('password-input').value = '';
+                document.getElementById('unlock-pass').value = '';
             }
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') checkPassword();
+        // 忘記密碼（回答安全問題重置）
+        function handleResetPassword() {
+            const ansInput = document.getElementById('forgot-answer').value.trim().toLowerCase();
+            const newPass = document.getElementById('forgot-new-pass').value.trim();
+            const savedAns = localStorage.getItem('diary_answer');
+
+            if (ansInput !== savedAns) {
+                alert('提示答案不正確！');
+                return;
+            }
+
+            if (!newPass) {
+                alert('請輸入新密碼！');
+                return;
+            }
+
+            localStorage.setItem('diary_password', newPass);
+            alert('🎉 密碼重置成功，請使用新密碼解鎖！');
+
+            document.getElementById('forgot-answer').value = '';
+            document.getElementById('forgot-new-pass').value = '';
+            showAuthPanel('unlock-panel');
+        }
+
+        // 修改密碼相關 Modal 功能
+        function openChangePasswordModal() {
+            document.getElementById('change-old-pass').value = '';
+            document.getElementById('change-new-pass').value = '';
+            document.getElementById('change-pass-modal').style.display = 'flex';
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('change-pass-modal').style.display = 'none';
+        }
+
+        function handleChangePassword() {
+            const oldPass = document.getElementById('change-old-pass').value;
+            const newPass = document.getElementById('change-new-pass').value.trim();
+            const savedPass = localStorage.getItem('diary_password');
+
+            if (oldPass !== savedPass) {
+                alert('舊密碼輸入錯誤！');
+                return;
+            }
+
+            if (!newPass) {
+                alert('新密碼不能為空！');
+                return;
+            }
+
+            localStorage.setItem('diary_password', newPass);
+            alert('🎉 密碼已成功變更！');
+            closeChangePasswordModal();
+        }
+
+        function setCurrentDateTime() {
+            const now = new Date();
+            document.getElementById('diary-date').valueAsDate = now;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('diary-time').value = `${hours}:${minutes}`;
         }
 
         function unlockApp() {
-            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('setup-panel').classList.add('hidden');
+            document.getElementById('unlock-panel').classList.add('hidden');
+            document.getElementById('forgot-panel').classList.add('hidden');
             document.getElementById('main-app').style.display = 'block';
-            document.getElementById('password-input').value = '';
+            
+            setCurrentDateTime();
             loadDiaries();
         }
 
         function lockApp() {
-            document.getElementById('main-app').style.display = 'none';
-            document.getElementById('lock-screen').style.display = 'block';
-            initAuth();
+            showAuthPanel('unlock-panel');
         }
-
-        document.getElementById('diary-date').valueAsDate = new Date();
 
         // 綁定主表單心情按鈕
         const moodBtns = document.querySelectorAll('#mood-options .mood-btn');
@@ -611,17 +805,23 @@
                 return;
             }
 
-            diaries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // 依日期與時間降冪排序（最新的在前）
+            diaries.sort((a, b) => {
+                const timeA = a.time || '00:00';
+                const timeB = b.time || '00:00';
+                return new Date(`${b.date}T${timeB}`) - new Date(`${a.date}T${timeA}`);
+            });
 
             diaries.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = 'diary-card';
                 const displayTitle = item.title ? escapeHtml(item.title) : '無標題';
+                const displayTime = item.time ? ` ${item.time}` : '';
                 const editedTag = item.updatedAt ? `<div class="edited-time">✏️ 修改於 ${item.updatedAt}</div>` : '';
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <span class="card-date">📅 ${item.date}</span>
+                        <span class="card-date">📅 ${item.date}${displayTime}</span>
                         <span class="card-mood">${item.mood}</span>
                     </div>
                     <div class="card-title-preview">📌 ${displayTitle}</div>
@@ -654,10 +854,12 @@
 
         function saveDiary() {
             const date = document.getElementById('diary-date').value;
+            const time = document.getElementById('diary-time').value;
             const title = document.getElementById('diary-title').value.trim();
             const content = document.getElementById('diary-content').value.trim();
 
             if (!date) { alert('請選擇日期！'); return; }
+            if (!time) { alert('請選擇時間！'); return; }
             if (!title) { alert('請輸入日記標題！'); return; }
             if (!content) { alert('請輸入日記內文！'); return; }
 
@@ -665,6 +867,7 @@
             diaries.push({
                 id: Date.now(),
                 date: date,
+                time: time,
                 mood: selectedMood,
                 title: title,
                 content: content
@@ -673,6 +876,7 @@
             localStorage.setItem('my_mood_diaries', JSON.stringify(diaries));
             document.getElementById('diary-title').value = '';
             document.getElementById('diary-content').value = '';
+            setCurrentDateTime();
             loadDiaries();
         }
 
@@ -683,6 +887,7 @@
 
             document.getElementById('edit-id').value = target.id;
             document.getElementById('edit-date').value = target.date;
+            document.getElementById('edit-time').value = target.time || '12:00';
             document.getElementById('edit-title').value = target.title;
             document.getElementById('edit-content').value = target.content;
 
@@ -705,10 +910,11 @@
         function updateDiary() {
             const id = parseInt(document.getElementById('edit-id').value);
             const date = document.getElementById('edit-date').value;
+            const time = document.getElementById('edit-time').value;
             const title = document.getElementById('edit-title').value.trim();
             const content = document.getElementById('edit-content').value.trim();
 
-            if (!date || !title || !content) { alert('請完整填寫欄位！'); return; }
+            if (!date || !time || !title || !content) { alert('請完整填寫欄位！'); return; }
 
             let diaries = JSON.parse(localStorage.getItem('my_mood_diaries') || '[]');
             const index = diaries.findIndex(item => item.id === id);
@@ -720,6 +926,7 @@
                 diaries[index] = {
                     ...diaries[index],
                     date: date,
+                    time: time,
                     mood: editSelectedMood,
                     title: title,
                     content: content,
@@ -741,10 +948,55 @@
             }
         }
 
+        /* 匯出與匯入功能 */
+        function exportData() {
+            const diaries = localStorage.getItem('my_mood_diaries') || '[]';
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(diaries);
+            const downloadAnchor = document.createElement('a');
+            
+            const today = new Date().toISOString().split('T')[0];
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `starry_diaries_backup_${today}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function triggerImport() {
+            document.getElementById('import-file-input').click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedDiaries = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedDiaries)) {
+                        alert('備份檔案格式不正確！');
+                        return;
+                    }
+
+                    if (confirm('匯入備份將會覆蓋當前裝置上的日記，確定要匯入嗎？')) {
+                        localStorage.setItem('my_mood_diaries', JSON.stringify(importedDiaries));
+                        alert('🎉 日記備份已成功匯入！');
+                        loadDiaries();
+                    }
+                } catch (err) {
+                    alert('讀取檔案失敗，請確認是否為有效的 JSON 備份檔。');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
         function escapeHtml(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
+        // 初始化驗證狀態
         initAuth();
     </script>
 </body>
